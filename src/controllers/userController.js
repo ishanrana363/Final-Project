@@ -2,7 +2,7 @@ const userModel = require("../models/usersModel");
 
 // registration
 
-export const registration = async (req,res)=>{
+exports.registration = async (req,res)=>{
     try {
         let reqBody = req.body;
         const data = await userModel.create(reqBody);
