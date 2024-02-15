@@ -6,11 +6,15 @@ const hpp = require('hpp');
 const cors = require("cors")
 const mongoSanitize = require('express-mongo-sanitize');
 var cookieParser = require('cookie-parser')
-const path = require("path");
+const bodyParser = require('body-parser');
 
 
 
 const app = new express();
+
+
+app.use(bodyParser.json({ limit: '10mb' }));
+
 
 
 // Using rate limit middleware
