@@ -1,18 +1,41 @@
 const userModel = require("../models/usersModel");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const emailUtility = require("../utility/emailUtility");
+const otpModel = require("../models/otpModel")
+const {encodeToken} = require("../utility/tokenUtility");
 
 
 // registration
 
 exports.registration = async (req,res)=>{
     try {
-        let reqBody = req.body;
-        let data = await userModel.create(reqBody);
+        let email = req.body.email;
+        let name = req.body.name;
+        let mobile = req.body.mobile;
+        let password = req.body.password;
+        let img = req.body.img;
+        let createData = {
+            name : name,
+            email : email,
+            mobile : mobile,
+            password : password,
+            img : img,
+        };
+
+
+        let otpCode = Math.floor(100000 + Math.random() * 999999);
+        let emailText = ` Your verification code is ${otpCode} `;
+        let emailSub = ` Verification code `;
+
+        let data = await userModel.create(createData);
+        await emailUtility(email,emailText,emailSub);
+        await otpModel.updateOne({ email: email }, { $set: { otp: otpCode } }, { upsert: true });
         res.status(201).json({
             status:"success",
             data : data
         })
+
     } catch (error) {
         res.status(500).json({
             status:"fail",
@@ -20,6 +43,49 @@ exports.registration = async (req,res)=>{
         })
     }
 };
+
+
+exports.emailOtpVerify = async(req, res) => {
+    try {
+        let email = req.params.email;
+        let otp = req.params.otp;
+        let statusCode = 1;
+        let statusUpdate = 0;
+        let otpStatus = 0;
+        let filter = {
+            otp: otp,
+            email: email,
+            status: statusCode
+        };
+
+        let data = await otpModel.findOne(filter);
+        let userData = await userModel.findOne({email:email});
+
+        if (data) {
+            await otpModel.updateOne(filter, { $set: { status: statusUpdate, otp:otpStatus } });
+            let token = encodeToken(email,userData._id.toString());
+            return res.status(200).json({
+                status: "success",
+                msg: "Otp verification successfully",
+                token: token,
+                data : userData
+            });
+        }
+        res.status(404).json({
+            status: "fail",
+            msg: "Invalid OTP or email"
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "fail",
+            msg: "Something went wrong!"
+        });
+    }
+};
+
+
+
 
 
 // login
@@ -115,5 +181,5 @@ exports.profileDetails = async (req,res)=>{
 
 
 
-
+// let token = encodeToken(email, user._id.toString());
 

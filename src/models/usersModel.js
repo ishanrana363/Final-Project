@@ -38,7 +38,7 @@ const userSchema = new Schema({
     },
     img: {
         type: String,
-    }
+    },
 }, { timestamps: true, versionKey: false });
 
 const userModel = model("User", userSchema);

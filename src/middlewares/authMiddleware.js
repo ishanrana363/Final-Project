@@ -5,16 +5,19 @@ module.exports=(req,res,next)=>{
     let token = req.headers["token"];
     jwt.verify(token,key,(error,decode)=>{
         if (error){
-            return res.status(401).send({
-                status : "fail",
+            return res.status(404).send({
+                status:"fail",
                 msg : "Unauthorized"
             })
         }else {
             let email = decode["email"];
+            console.log(`decode email is :::::${email}`);
             req.headers.email = email;
             let id = decode["id"];
-            req.headers.id = id;
-            next()
+            console.log(`decode id is :::::: ${id} `);
+            req.header.id = id;
+            next();
         }
     })
-}
+
+};
