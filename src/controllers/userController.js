@@ -49,7 +49,7 @@ exports.emailOtpVerify = async(req, res) => {
     try {
         let email = req.params.email;
         let otp = req.params.otp;
-        let statusCode = 1;
+        let statusCode = 0;
         let statusUpdate = 0;
         let otpStatus = 0;
         let filter = {
@@ -60,6 +60,7 @@ exports.emailOtpVerify = async(req, res) => {
 
         let data = await otpModel.findOne(filter);
         let userData = await userModel.findOne({email:email});
+        console.log(`user id is ${userData["_id"]} `)
 
         if (data) {
             await otpModel.updateOne(filter, { $set: { status: statusUpdate, otp:otpStatus } });
@@ -153,7 +154,8 @@ exports.updateUser = async (req,res)=>{
 
 exports.profileDetails = async (req,res)=>{
     try{
-        let id = req.headers["id"];
+        let id = req.headers["user_id"];
+        console.log(`user header id ;;;;;${id}`)
         let filter = {_id:id};
         let data = await userModel.findOne(filter);
         res.status(200).json({

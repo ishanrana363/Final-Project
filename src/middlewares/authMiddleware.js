@@ -13,9 +13,9 @@ module.exports=(req,res,next)=>{
             let email = decode["email"];
             console.log(`decode email is :::::${email}`);
             req.headers.email = email;
-            let id = decode["id"];
+            let id = decode["user_id"];
             console.log(`decode id is :::::: ${id} `);
-            req.header.id = id;
+            req.headers.user_id = id;
             next();
         }
     })

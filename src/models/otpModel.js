@@ -13,7 +13,7 @@ const otpSchema = new Schema({
     },
     status : {
         type : String,
-        default : 1
+        default : 0
     }
 },{timestamps:true,versionKey:false});
 
